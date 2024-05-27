@@ -105,19 +105,17 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        if len(self.cells) == self.count:
+        if len(self.cells) == self.count and self.count != 0:
             return self.cells
-        else:
-            None
+        return set()
 
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-        if self.count == 0:
+        if self.count == 0 and len(self.cells) > 0:
             return self.cells
-        else:
-            None
+        return set()
 
     def mark_mine(self, cell):
         """
@@ -126,7 +124,7 @@ class Sentence():
         """
         if cell in self.cells:
             self.cells.remove(cell)
-            self.count = -1
+            self.count =-1
 
     def mark_safe(self, cell):
         """
@@ -191,7 +189,52 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        raise NotImplementedError
+
+        # 1. 
+        self.moves_made.add(cell)
+        # 2.
+        self.mark_safe(cell)
+
+        # 3.
+        cells = set()
+
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
+                if (i,j) == cells:
+                    continue
+
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    if (i,j) in self.mines:
+                        count -=1
+                    elif (i,j) not in self.mines and (i,j) not in self.moves_made:
+                        cells.add((i,j))
+
+        nueva_sentencia = Sentence(cells, count)
+        self.knowledge.append(nueva_sentencia)
+
+        # 4. 
+        for sentence in self.knowledge:
+            minas = sentence.known_mines()
+            seguras = sentence.known_safes()
+            
+            # usando el metodo .copy para asegurar que no se modifique la lista original en la iteración
+            for cell in minas.copy():
+                self.mark_mine(cell)
+            for cell in seguras.copy():
+                self.mark_safe(cell)
+
+        # 5.
+
+        for sentencia in self.knowledge:
+            if nueva_sentencia.cells.issubset(sentencia.cells) and sentencia.count > 0 and nueva_sentencia.count > 0 and nueva_sentencia != sentencia:
+                nuevo_set = sentencia.cells.difference(nueva_sentencia.cells)
+                
+                minas_disponibles = sentencia.count - nueva_sentencia.count
+
+                nueva_sentencia_set = Sentence(list(nuevo_set), minas_disponibles)
+
+                self.knowledge.append(nueva_sentencia_set)
+
 
     def make_safe_move(self):
         """
@@ -204,9 +247,24 @@ class MinesweeperAI():
         """
         for cell in self.safes:
             if cell not in self.moves_made:
+                return cell 
+        return None
+
+    def make_safe_move(self):
+        """
+        Returns a safe cell to choose on the Minesweeper board.
+        The move must be known to be safe, and not already a move
+        that has been made.
+
+        This function may use the knowledge in self.mines, self.safes
+        and self.moves_made, but should not modify any of those values.
+        """
+
+        for cell in self.safes:
+            if cell not in self.moves_made:
                 return cell
-            else:
-                None
+        return None
+
 
 
     def make_random_move(self):
@@ -216,4 +274,12 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
-        raise NotImplementedError
+        movimientos_totales = self.height * self.width
+        while movimientos_totales > 0:
+
+            filas = random.randrange(self.height)
+            columnas = random.randrange(self.width)
+
+            if (filas, columnas) not in self.moves_made and (filas, columnas) not in self.mines:
+                return (filas, columnas)
+            movimientos_totales -= 1
