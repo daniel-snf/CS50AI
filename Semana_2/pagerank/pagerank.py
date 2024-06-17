@@ -193,8 +193,8 @@ def iterate_pagerank(corpus, damping_factor):
                     # sumatorio del algoritmo
                     suma_contribucion += ranks[i] / conteo_links
             # funcion del algorimo PR(p) p = i, usando la notación de esta función        
-            algoritmo = (1-damping_factor) / N + damping_factor * suma_contribucion
-            nuevos_ranks[pagina] = algoritmo
+            funcion_algoritmo = (1-damping_factor) / N + damping_factor * suma_contribucion
+            nuevos_ranks[pagina] = funcion_algoritmo
 
         
         # verificamos la convergencia
