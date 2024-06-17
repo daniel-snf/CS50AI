@@ -37,7 +37,7 @@ En donde se toma una muestra de todas las variables dentro de la red bayesiana e
 
 Y se genera una gran cantidad de muestras, y en base a la información de esta se realiza la inferencia de los Query, con este método de muestreo llamado muestreo de rechazo puede que solo se tomen unos casos y se rechazen otros haciendo que sea muy ineficaz todo el muestreo necesario. 
 
-Así un metood de muestreo mas apropiado es **Likelihood Weighting**
+Así un método de muestreo mas apropiado es **Likelihood Weighting**
 
 El cual consiste en un procedimiento similar en donde se intenta evitar el descartar muestras que no encajen con la evidencia. 
 
