@@ -139,7 +139,49 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
-    raise NotImplementedError
+    # Probabilidad conjunta inicial
+    prob_conjunta = 1.0
+
+    # Iteración de cada miembro familiar
+    for persona in people:
+        # Información de cada miembro
+        madre = people[persona]['mother']
+        padre = people[persona]['father']
+        conteo_genes = 2 if persona in two_genes else 1 if persona in one_gene else 0
+        con_rasgo = persona in have_trait
+
+        # Calculo de probabilidades 
+        if madre is None and padre is None:
+            # sin info de padres
+            prob_gen = PROBS["gene"][conteo_genes]
+        else:
+            # Si hay info familiar
+            prob_madre =(
+                1 - PROBS["mutation"] if madre in two_genes else
+                0.5 if madre in one_gene else
+                PROBS["mutation"]
+                         ) 
+            
+            prob_padre =(
+                1 - PROBS["mutation"] if padre in two_genes else
+                0.5 if padre in one_gene else
+                PROBS["mutation"]
+                         ) 
+            
+            # Probabilidad de que la persona este en conteo_genes == 0
+            prob_gen = (
+                prob_padre*prob_madre if conteo_genes == 2 else
+                (1 - prob_madre)*prob_padre + prob_madre*(1 - prob_padre) if conteo_genes == 1 else
+                (1 - prob_madre)*(1 - prob_padre)
+            )
+             
+        # Calcular  probabilidades "trait" de los rasgos
+        prob_rasgos = PROBS["trait"][conteo_genes][con_rasgo]
+
+        # Actualiza la probabilidad conjunta
+        prob_conjunta *= prob_gen * prob_rasgos
+        
+    return prob_conjunta
 
 
 def update(probabilities, one_gene, two_genes, have_trait, p):
@@ -149,7 +191,12 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
     Which value for each distribution is updated depends on whether
     the person is in `have_gene` and `have_trait`, respectively.
     """
-    raise NotImplementedError
+    for persona in probabilities:
+        conteo_genes = 2 if persona in two_genes else 1 if persona in one_gene else 0
+        con_rasgo = persona in have_trait
+        # actualizar conteo de genes y rasgos
+        probabilities[persona]["gene"][conteo_genes] += p
+        probabilities[persona]["trait"][con_rasgo] += p 
 
 
 def normalize(probabilities):
@@ -157,8 +204,16 @@ def normalize(probabilities):
     Update `probabilities` such that each probability distribution
     is normalized (i.e., sums to 1, with relative proportions the same).
     """
-    raise NotImplementedError
+    for persona in probabilities:
+        #Normalizar la distribución de genes
+        suma_genes = sum(probabilities[persona]["gene"].values())
+        for gen in probabilities[persona]["gene"]:
+            probabilities[persona]["gene"][gen] /= suma_genes
 
+        # Normalizar la distrubución de rasgos
+        suma_rasgos = sum(probabilities[persona]["trait"].values())
+        for rasgo in probabilities[persona]["trait"]:
+            probabilities[persona]["trait"][rasgo] /= suma_rasgos
 
 if __name__ == "__main__":
     main()
