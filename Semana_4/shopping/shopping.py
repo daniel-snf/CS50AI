@@ -62,9 +62,11 @@ def load_data(filename):
     evidence = []
     labels = []
 
+    month = dict(Jan=0, Feb=1, Mar=2, Apr=3, May=4, June=5, Jul=6, Aug=7, Sep=8, Oct=9, Nov=10, Dec=11)
+
     with open(filename, 'r') as archivo:
         reader = csv.reader(archivo)
-
+        next(reader)
         for fila in reader:
 
             if fila[-1] == "TRUE":
@@ -78,17 +80,23 @@ def load_data(filename):
                 int(fila[2]), # Informational como int
                 float(fila[3]), # Informational_Duration como float
                 int(fila[4]), # ProductRelated como int
-                
+                float(fila(5)), # ProductRelated_Duration como float
+                float(fila(6)), # BounceRates como float
+                float(fila(7)), # ExitRates como float
+                float(fila(8)), # PageValues como float
+                float(fila(9)), # SpecialDay como float
+                month(fila(10)), # Month como int
+                int(fila(11)), # OperatingSystems como int
+                int(fila(12)), # Browser como int
+                int(fila(13)), # Region como int
+                int(fila(14)), # TrafficType como int
+                1 if fila[15] == "Visitante que Regresa" else 0,
+                1 if fila[16] == "TRUE" else 0
                 )
+            
 
+    return evidence, labels
 
-
-
-
-
-
-
-    raise NotImplementedError
 
 
 def train_model(evidence, labels):
