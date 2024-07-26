@@ -129,21 +129,26 @@ def evaluate(labels, predictions):
     """
 
 # Contadores
-    postivos_verdaderos = 0
-    postivos_actuales = 0
+    positivos_verdaderos = 0
+    positivos_actuales = 0
     negativos_verdaderos = 0
     negativos_actuales = 0
     
     for i in range(len(labels)):
         if labels[i] ==1:
-            postivos_actuales +=1
+            positivos_actuales +=1
             if predictions[i] == 1:
-                postivos_verdaderos +=1
+                positivos_verdaderos +=1
         else:
             negativos_actuales +=1
             if predictions[i] == 0:
                 negativos_verdaderos +=1
         
+
+    sensitividad = positivos_verdaderos / positivos_actuales
+    especificidad = negativos_verdaderos / negativos_actuales
+
+    return sensitividad, especificidad
 
 
 if __name__ == "__main__":
