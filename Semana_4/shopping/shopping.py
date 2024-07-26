@@ -62,7 +62,7 @@ def load_data(filename):
     evidence = []
     labels = []
 
-    month = dict(Jan=0, Feb=1, Mar=2, Apr=3, May=4, June=5, Jul=6, Aug=7, Sep=8, Oct=9, Nov=10, Dec=11)
+    mes = dict(Jan=0, Feb=1, Mar=2, Apr=3, May=4, June=5, Jul=6, Aug=7, Sep=8, Oct=9, Nov=10, Dec=11)
 
     with open(filename, 'r') as archivo:
         reader = csv.reader(archivo)
@@ -85,13 +85,13 @@ def load_data(filename):
                 float(fila(7)), # ExitRates como float
                 float(fila(8)), # PageValues como float
                 float(fila(9)), # SpecialDay como float
-                month(fila(10)), # Month como int
+                mes(fila(10)), # Month como int
                 int(fila(11)), # OperatingSystems como int
                 int(fila(12)), # Browser como int
                 int(fila(13)), # Region como int
                 int(fila(14)), # TrafficType como int
                 1 if fila[15] == "Visitante que Regresa" else 0,
-                1 if fila[16] == "TRUE" else 0
+                1 if fila[16] == "Verdadero" else 0
                 )
             
 
@@ -128,11 +128,22 @@ def evaluate(labels, predictions):
     actual negative labels that were accurately identified.
     """
 
-
-
-
-
-    raise NotImplementedError
+# Contadores
+    postivos_verdaderos = 0
+    postivos_actuales = 0
+    negativos_verdaderos = 0
+    negativos_actuales = 0
+    
+    for i in range(len(labels)):
+        if labels[i] ==1:
+            postivos_actuales +=1
+            if predictions[i] == 1:
+                postivos_verdaderos +=1
+        else:
+            negativos_actuales +=1
+            if predictions[i] == 0:
+                negativos_verdaderos +=1
+        
 
 
 if __name__ == "__main__":
